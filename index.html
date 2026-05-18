@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kintsugi Atelier — Metz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-pale: #F5E9C8;
+      --dark: #1A1612;
+      --cream: #F7F3EC;
+      --warm-grey: #8A7F74;
+      --text: #2C2520;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--text); font-weight: 300; overflow-x: hidden; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 48px; transition: background 0.4s;
+    }
+    nav.scrolled { background: rgba(247,243,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(201,168,76,0.2); }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; letter-spacing: 0.12em; color: var(--gold); text-decoration: none; }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--cream); text-decoration: none; transition: color 0.3s; }
+    nav.scrolled .nav-links a { color: var(--warm-grey); }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ─── HERO ─── */
+    #hero { position: relative; width: 100%; height: 100vh; background: var(--dark); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    #crack-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .hero-content {
+      position: relative; z-index: 10; text-align: center;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 1.4s ease, transform 1.4s ease;
+    }
+    .hero-content.visible { opacity: 1; transform: translateY(0); }
+    .hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 300; color: var(--cream); line-height: 1.05; letter-spacing: 0.04em; }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+    .hero-sub { margin-top: 24px; font-size: 0.9rem; letter-spacing: 0.1em; color: rgba(247,243,236,0.55); }
+    .hero-cta { margin-top: 48px; display: inline-block; padding: 14px 42px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
+    .hero-cta:hover { background: var(--gold); color: var(--dark); }
+    .scroll-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0; transition: opacity 1s ease; }
+    .scroll-hint.visible { opacity: 0.5; }
+    .scroll-hint span { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream); }
+    .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 120px 48px; }
+    .section-eyebrow { font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 300; line-height: 1.15; color: var(--dark); }
+    .gold-divider { width: 48px; height: 1px; background: var(--gold); margin: 28px 0; }
+    .section-body { font-size: 1rem; line-height: 1.9; color: var(--warm-grey); max-width: 520px; }
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    /* ─── ART ─── */
+    #art { background: var(--cream); display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .art-visual { position: relative; height: 540px; overflow: hidden; }
+    .art-visual img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    .art-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(26,22,18,0.10) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .art-kanji { position: absolute; bottom: 24px; right: 24px; font-family: serif; font-size: 5rem; color: rgba(201,168,76,0.22); line-height: 1; user-select: none; pointer-events: none; text-shadow: 0 0 40px rgba(201,168,76,0.3); }
+    .art-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .stat { border-left: 2px solid var(--gold); padding-left: 16px; }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--dark); }
+    .stat-label { font-size: 0.75rem; letter-spacing: 0.12em; color: var(--warm-grey); text-transform: uppercase; }
+
+    /* ─── CATALOGUE ─── */
+    #catalogue { background: var(--dark); padding: 120px 0; overflow: hidden; }
+    .catalogue-header { padding: 0 48px; margin-bottom: 64px; }
+    .catalogue-header .section-title { color: var(--cream); }
+    .catalogue-header .section-body { color: rgba(247,243,236,0.45); }
+    .carousel-wrapper { position: relative; }
+    .carousel-track { display: flex; gap: 24px; padding: 0 48px; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .product-card { flex: 0 0 340px; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.15); overflow: hidden; cursor: pointer; transition: border-color 0.3s, transform 0.3s; }
+    .product-card:hover { border-color: rgba(201,168,76,0.5); transform: translateY(-4px); }
+    .product-img { width: 100%; height: 280px; overflow: hidden; position: relative; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; filter: brightness(0.92) saturate(0.9); }
+    .product-card:hover .product-img img { transform: scale(1.04); filter: brightness(1) saturate(1); }
+    .product-info { padding: 28px; }
+    .product-tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .product-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; color: var(--cream); margin-bottom: 10px; }
+    .product-desc { font-size: 0.82rem; line-height: 1.7; color: rgba(247,243,236,0.4); margin-bottom: 20px; }
+    .product-footer { display: flex; justify-content: space-between; align-items: center; }
+    .product-price { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; color: var(--gold-light); }
+    .product-btn { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,0.4); padding: 8px 18px; cursor: pointer; background: none; transition: background 0.3s, color 0.3s; }
+    .product-btn:hover { background: var(--gold); color: var(--dark); }
+    .carousel-controls { display: flex; align-items: center; gap: 16px; padding: 40px 48px 0; }
+    .carousel-btn { width: 48px; height: 48px; border: 1px solid rgba(201,168,76,0.35); background: none; color: var(--gold); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s, color 0.3s; }
+    .carousel-btn:hover { background: var(--gold); color: var(--dark); }
+    .carousel-dots { display: flex; gap: 8px; }
+    .dot { width: 24px; height: 1px; background: rgba(201,168,76,0.25); transition: background 0.3s, width 0.3s; cursor: pointer; }
+    .dot.active { width: 48px; background: var(--gold); }
+
+    /* ─── WORKSHOPS ─── */
+    #workshops { background: var(--gold-pale); display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; padding: 0; }
+    .workshop-photo { position: relative; overflow: hidden; min-height: 600px; }
+    .workshop-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .workshop-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(26,22,18,0.1), transparent); }
+    .workshop-content { padding: 100px 64px; display: flex; flex-direction: column; justify-content: center; }
+    .workshop-cards { display: grid; gap: 16px; margin-top: 32px; }
+    .workshop-card { background: white; padding: 28px 32px; border-left: 3px solid var(--gold); transition: transform 0.3s, box-shadow 0.3s; }
+    .workshop-card:hover { transform: translateX(6px); box-shadow: -6px 0 24px rgba(201,168,76,0.15); }
+    .wc-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 400; color: var(--dark); margin-bottom: 8px; }
+    .wc-desc { font-size: 0.82rem; line-height: 1.7; color: var(--warm-grey); margin-bottom: 16px; }
+    .wc-meta { display: flex; gap: 20px; }
+    .wc-tag { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+    .wc-tag span { color: var(--warm-grey); letter-spacing: 0; text-transform: none; }
+    .workshop-cta { display: inline-block; margin-top: 40px; padding: 16px 44px; background: var(--dark); color: var(--gold); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; transition: background 0.3s; align-self: flex-start; }
+    .workshop-cta:hover { background: #2e2820; }
+
+    /* ─── ATELIER ─── */
+    #atelier { background: var(--cream); display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; padding: 0; }
+    .atelier-map { background: #E8E0D4; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; min-height: 600px; }
+    .map-pin { width: 44px; height: 44px; background: var(--gold); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 6px 24px rgba(201,168,76,0.4); }
+    .map-address { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--dark); text-align: center; line-height: 1.8; }
+    .map-address small { font-size: 0.82rem; color: var(--warm-grey); font-family: 'Lato', sans-serif; font-weight: 300; letter-spacing: 0.08em; }
+    .atelier-content { padding: 100px 64px; display: flex; flex-direction: column; justify-content: center; }
+    .atelier-features { display: grid; gap: 28px; margin-top: 40px; }
+    .feature { display: flex; gap: 20px; align-items: flex-start; }
+    .feature-icon { width: 40px; height: 40px; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--gold); font-size: 1rem; }
+    .feature-text h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 400; color: var(--dark); margin-bottom: 4px; }
+    .feature-text p { font-size: 0.82rem; line-height: 1.7; color: var(--warm-grey); }
+
+    /* ─── FOOTER ─── */
+    footer { background: var(--dark); padding: 80px 48px 40px; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; padding-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .footer-brand .nav-logo { display: block; margin-bottom: 20px; font-size: 1.6rem; }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; color: rgba(247,243,236,0.4); line-height: 1.7; max-width: 260px; }
+    .footer-col h5 { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul a { font-size: 0.85rem; color: rgba(247,243,236,0.4); text-decoration: none; transition: color 0.3s; }
+    .footer-col ul a:hover { color: var(--gold-light); }
+    .footer-col address { font-style: normal; font-size: 0.85rem; line-height: 1.9; color: rgba(247,243,236,0.4); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 32px; }
+    .footer-copy { font-size: 0.75rem; color: rgba(247,243,236,0.2); letter-spacing: 0.05em; }
+    .footer-social { display: flex; gap: 16px; }
+    .social-btn { width: 36px; height: 36px; border: 1px solid rgba(201,168,76,0.2); display: flex; align-items: center; justify-content: center; color: rgba(201,168,76,0.5); font-size: 0.75rem; text-decoration: none; transition: border-color 0.3s, color 0.3s; }
+    .social-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      #art { grid-template-columns: 1fr; gap: 48px; }
+      .art-visual { height: 360px; }
+      #workshops, #atelier { grid-template-columns: 1fr; }
+      .workshop-photo { min-height: 320px; }
+      .atelier-map-wrap { min-height: 360px; }
+      .map-nav-bar { flex-wrap: wrap; gap: 8px; }
+      .workshop-content, .atelier-content { padding: 64px 24px; }
+      .catalogue-header, .carousel-track, .carousel-controls { padding-left: 24px; padding-right: 24px; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <a class="nav-logo" href="#">金継ぎ Atelier</a>
+  <ul class="nav-links">
+    <li><a href="#art">L'Art</a></li>
+    <li><a href="#catalogue">Boutique</a></li>
+    <li><a href="#workshops">Workshops</a></li>
+    <li><a href="#atelier">L'Atelier</a></li>
+    <li><a href="#atelier">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="crack-canvas"></canvas>
+  <div class="hero-content" id="heroContent">
+    <p class="hero-eyebrow">Metz · Japon · Céramique</p>
+    <h1 class="hero-title">Kintsugi<br><em>Atelier</em></h1>
+    <p class="hero-sub">L'art de réparer avec de l'or</p>
+    <a href="#catalogue" class="hero-cta">Découvrir la collection</a>
+  </div>
+  <div class="scroll-hint" id="scrollHint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ART -->
+<section id="art">
+  <div class="art-visual reveal">
+    <img
+      src="kintsugi-art.jpg"
+      alt="Plateau Kintsugi — céramique bleue et or avec deux cappuccinos"
+    />
+    <div class="art-overlay"></div>
+    <div class="art-kanji">金<br>継<br>ぎ</div>
+  </div>
+  <div>
+    <p class="section-eyebrow reveal">L'art du Kintsugi</p>
+    <h2 class="section-title reveal reveal-delay-1">Réparer les fractures<br>avec de l'or</h2>
+    <div class="gold-divider reveal reveal-delay-1"></div>
+    <p class="section-body reveal reveal-delay-2">
+      Le Kintsugi (金継ぎ, « jointure en or ») est une technique ancestrale japonaise qui consiste à réparer les céramiques brisées à l'aide de laque saupoudrée de poudre d'or, d'argent ou de platine. Née à Kyoto au XVe siècle, cette pratique transcende la simple restauration.
+    </p>
+    <p class="section-body reveal reveal-delay-3" style="margin-top: 16px;">
+      Plutôt que de dissimuler les blessures, le Kintsugi les sublime. Chaque fissure devient une ligne de lumière, chaque cicatrice une trace d'histoire. Les pièces réparées gagnent une nouvelle vie — souvent plus belle que leur forme originale.
+    </p>
+    <div class="art-stats reveal reveal-delay-3">
+      <div class="stat"><div class="stat-num">XV<sup>e</sup></div><div class="stat-label">Siècle d'origine</div></div>
+      <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Ans de tradition</div></div>
+      <div class="stat"><div class="stat-num">Or 22K</div><div class="stat-label">Poudre utilisée</div></div>
+      <div class="stat"><div class="stat-num">Wabi</div><div class="stat-label">Philosophie Sabi</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CATALOGUE -->
+<section id="catalogue">
+  <div class="catalogue-header">
+    <p class="section-eyebrow reveal">Collection 2025</p>
+    <h2 class="section-title reveal reveal-delay-1">Chaque pièce,<br>une œuvre unique</h2>
+    <div class="gold-divider reveal reveal-delay-1"></div>
+    <p class="section-body reveal reveal-delay-2">Céramiques Kintsugi artisanales, réparées à la feuille d'or 22 carats selon la méthode traditionnelle japonaise.</p>
+  </div>
+  <div class="carousel-wrapper">
+    <div class="carousel-track" id="carouselTrack">
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1565941072372-0f0f10c8b7dd?auto=format&fit=crop&w=600&q=80" alt="Bol Kintsugi No.1" loading="lazy" />
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Bol · Artisanal</p>
+          <h3 class="product-name">Bol Kintsugi No. 1</h3>
+          <p class="product-desc">Bol en grès céladon, réparé à la poudre d'or 22 carats. Pièce unique, signé par l'artisane.</p>
+          <div class="product-footer"><span class="product-price">85 €</span><button class="product-btn">Commander</button></div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1654738209839-571e0ff47323?auto=format&fit=crop&w=600&q=80" alt="Vase Wabi-Sabi" loading="lazy" />
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Vase · Wabi-Sabi</p>
+          <h3 class="product-name">Vase Wabi-Sabi</h3>
+          <p class="product-desc">Vase en faïence blanche, fissures assemblées à l'or. La beauté de l'imperfection sublimée.</p>
+          <div class="product-footer"><span class="product-price">120 €</span><button class="product-btn">Commander</button></div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1622021134395-d26aab83c221?auto=format&fit=crop&w=600&q=80" alt="Assiette Kintsugi" loading="lazy" />
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Assiette · Céladon</p>
+          <h3 class="product-name">Assiette Kintsugi</h3>
+          <p class="product-desc">Assiette en porcelaine céladon. Réseaux de fissures dorées formant une cartographie poétique.</p>
+          <div class="product-footer"><span class="product-price">95 €</span><button class="product-btn">Commander</button></div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1510035618584-c442b241abe7?auto=format&fit=crop&w=600&q=80" alt="Tasse Yunomi" loading="lazy" />
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Tasse à thé · Yunomi</p>
+          <h3 class="product-name">Tasse Yunomi</h3>
+          <p class="product-desc">Tasse à thé Yunomi en grès sombre. Les veines d'or rappellent la lave refroidissant sur la roche.</p>
+          <div class="product-footer"><span class="product-price">65 €</span><button class="product-btn">Commander</button></div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1622947344865-a7fcf40e88e7?auto=format&fit=crop&w=600&q=80" alt="Bol Cérémoniel" loading="lazy" />
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Bol · Cérémoniel</p>
+          <h3 class="product-name">Bol Cérémoniel</h3>
+          <p class="product-desc">Grand bol à matcha en grès chamotté. Réparations généreuses à l'or — pièce maîtresse d'exception.</p>
+          <div class="product-footer"><span class="product-price">145 €</span><button class="product-btn">Commander</button></div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1610128361323-6e941c97f023?auto=format&fit=crop&w=600&q=80" alt="Coupe Décorée" loading="lazy" />
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Coupe · Décorative</p>
+          <h3 class="product-name">Coupe Décorée</h3>
+          <p class="product-desc">Coupe en terre sigillée aux ocres chauds. Les dorures forment un paysage en relief, unique.</p>
+          <div class="product-footer"><span class="product-price">110 €</span><button class="product-btn">Commander</button></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prevBtn">&#8592;</button>
+      <button class="carousel-btn" id="nextBtn">&#8594;</button>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKSHOPS -->
+<section id="workshops">
+  <div class="workshop-photo reveal">
+    <img
+      src="https://images.unsplash.com/photo-1751810106063-788098f33bf2?auto=format&fit=crop&w=900&q=85"
+      alt="Atelier Kintsugi — réparation céramique"
+      loading="lazy"
+    />
+  </div>
+  <div class="workshop-content">
+    <p class="section-eyebrow reveal">Ateliers participatifs</p>
+    <h2 class="section-title reveal reveal-delay-1">Créez votre propre<br>Kintsugi à Metz</h2>
+    <div class="gold-divider reveal reveal-delay-1"></div>
+    <p class="section-body reveal reveal-delay-2">
+      Venez vivre l'expérience du Kintsugi dans notre atelier messin. En petit groupe, guidés par notre artisane, vous apprendrez à réparer une pièce de céramique selon la méthode traditionnelle japonaise.
+    </p>
+    <div class="workshop-cards">
+      <div class="workshop-card reveal reveal-delay-1">
+        <h3 class="wc-title">Initiation Kintsugi</h3>
+        <p class="wc-desc">Réparez votre propre pièce. Découverte de la laque Urushi et de la poudre d'or.</p>
+        <div class="wc-meta">
+          <div class="wc-tag">Durée <span>3h</span></div>
+          <div class="wc-tag">Tarif <span>75 €</span></div>
+          <div class="wc-tag">Groupe <span>6 max</span></div>
+        </div>
+      </div>
+      <div class="workshop-card reveal reveal-delay-2">
+        <h3 class="wc-title">Journée Wabi-Sabi</h3>
+        <p class="wc-desc">Atelier complet d'une journée — philosophie le matin, pratique intensive l'après-midi.</p>
+        <div class="wc-meta">
+          <div class="wc-tag">Durée <span>7h</span></div>
+          <div class="wc-tag">Tarif <span>145 €</span></div>
+          <div class="wc-tag">Groupe <span>4 max</span></div>
+        </div>
+      </div>
+      <div class="workshop-card reveal reveal-delay-3">
+        <h3 class="wc-title">Atelier Entreprise</h3>
+        <p class="wc-desc">Team-building autour du Kintsugi — une métaphore vivante de la résilience.</p>
+        <div class="wc-meta">
+          <div class="wc-tag">Durée <span>Sur mesure</span></div>
+          <div class="wc-tag">Tarif <span>Devis</span></div>
+          <div class="wc-tag">Groupe <span>Jusqu'à 20</span></div>
+        </div>
+      </div>
+    </div>
+    <a href="#atelier" class="workshop-cta reveal reveal-delay-3">Réserver un atelier</a>
+  </div>
+</section>
+
+<!-- ATELIER -->
+<section id="atelier">
+  <div class="atelier-map reveal">
+    <div class="map-pin"></div>
+    <div class="map-address">
+      12 rue des Clercs<br>
+      57000 Metz, Moselle<br><br>
+      <small>Ouvert mar–sam &middot; 10h–18h</small>
+    </div>
+  </div>
+  <div class="atelier-content">
+    <p class="section-eyebrow reveal">Notre espace</p>
+    <h2 class="section-title reveal reveal-delay-1">L'Atelier<br>de Metz</h2>
+    <div class="gold-divider reveal reveal-delay-1"></div>
+    <p class="section-body reveal reveal-delay-2">
+      Niché dans le cœur historique de Metz, notre atelier est un espace de création et de transmission. Lumière naturelle, odeur de laque et cliquetis de pinceaux — un sanctuaire dédié à la beauté de l'imparfait.
+    </p>
+    <div class="atelier-features reveal reveal-delay-3">
+      <div class="feature">
+        <div class="feature-icon">✦</div>
+        <div class="feature-text">
+          <h4>Galerie & Boutique</h4>
+          <p>12 rue des Clercs, 57000 Metz — ouvert mar–sam, 10h à 18h.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">◈</div>
+        <div class="feature-text">
+          <h4>Restaurations sur-mesure</h4>
+          <p>Apportez votre pièce brisée. Nous la restaurons à l'or, l'argent ou le platine.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⌘</div>
+        <div class="feature-text">
+          <h4>Expédition France & Europe</h4>
+          <p>Emballage soigné, livraison sécurisée sous 5 à 7 jours ouvrés.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a class="nav-logo" href="#">金継ぎ Atelier</a>
+      <p class="footer-tagline">« Ce qui a été brisé est plus fort là où l'or a coulé. »</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigation</h5>
+      <ul>
+        <li><a href="#art">L'Art du Kintsugi</a></li>
+        <li><a href="#catalogue">Boutique</a></li>
+        <li><a href="#workshops">Workshops</a></li>
+        <li><a href="#atelier">L'Atelier</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <address>12 rue des Clercs<br>57000 Metz<br><br>contact@kintsugi-atelier.fr<br>+33 (0)3 87 XX XX XX</address>
+    </div>
+    <div class="footer-col">
+      <h5>Horaires</h5>
+      <ul>
+        <li><a href="#">Mardi — 10h à 18h</a></li>
+        <li><a href="#">Mercredi — 10h à 18h</a></li>
+        <li><a href="#">Jeudi — 10h à 18h</a></li>
+        <li><a href="#">Vendredi — 10h à 18h</a></li>
+        <li><a href="#">Samedi — 10h à 17h</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Kintsugi Atelier — Metz. Tous droits réservés.</p>
+    <div class="footer-social">
+      <a href="#" class="social-btn">in</a>
+      <a href="#" class="social-btn">ig</a>
+      <a href="#" class="social-btn">fb</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  3 COULÉES D'OR — GOLD FLOW ANIMATION
+// ══════════════════════════════════════════════════════════
+const canvas = document.getElementById('crack-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); buildCoulees(); });
+
+// Generate a flowing path through an array of waypoints [fx, fy] (fractions of screen)
+function makeFlowPath(waypoints, jitterAmt = 10) {
+  const pts = [];
+  const wp = waypoints.map(([fx, fy]) => ({ x: fx * canvas.width, y: fy * canvas.height }));
+  for (let i = 0; i < wp.length - 1; i++) {
+    const p0 = wp[i], p1 = wp[i + 1];
+    const dist = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+    const steps = Math.max(6, Math.ceil(dist / 20));
+    const nx = -(p1.y - p0.y) / dist;
+    const ny =  (p1.x - p0.x) / dist;
+    if (i === 0) pts.push({ x: p0.x, y: p0.y });
+    for (let s = 1; s <= steps; s++) {
+      const t = s / steps;
+      const jitter = (Math.random() - 0.5) * jitterAmt;
+      pts.push({
+        x: p0.x + (p1.x - p0.x) * t + nx * jitter,
+        y: p0.y + (p1.y - p0.y) * t + ny * jitter
+      });
+    }
+  }
+  return pts;
+}
+
+class Coulee {
+  constructor(waypoints, width, crackDelay, goldDelay, goldSpeed) {
+    this.width      = width;
+    this.crackDelay = crackDelay;
+    this.goldDelay  = goldDelay;
+    this.crackProg  = 0;
+    this.goldProg   = 0;
+    this.crackSpeed = 0.022;
+    this.goldSpeed  = goldSpeed || 0.006;
+    this.waypoints  = waypoints;
+    this.pts        = makeFlowPath(waypoints);
+  }
+
+  rebuild() { this.pts = makeFlowPath(this.waypoints); }
+
+  _stroke(progress, lw, strokeStyle, shadowColor, shadowBlur) {
+    if (progress <= 0 || this.pts.length < 2) return null;
+    const maxI = Math.max(1, Math.floor(progress * (this.pts.length - 1)));
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(this.pts[0].x, this.pts[0].y);
+    for (let i = 1; i <= maxI; i++) ctx.lineTo(this.pts[i].x, this.pts[i].y);
+    ctx.lineWidth   = lw;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.strokeStyle = strokeStyle;
+    ctx.shadowColor = shadowColor || 'transparent';
+    ctx.shadowBlur  = shadowBlur  || 0;
+    ctx.stroke();
+    ctx.restore();
+    return this.pts[maxI];
+  }
+
+  draw() {
+    // Fissure sombre (crack already opened)
+    this._stroke(this.crackProg, this.width + 1, 'rgba(255,255,255,0.06)');
+
+    if (this.goldProg <= 0) return;
+
+    // Large outer glow
+    this._stroke(this.goldProg, this.width * 2.8, 'rgba(180,110,10,0.18)', '#C9813A', 32);
+    // Mid glow
+    this._stroke(this.goldProg, this.width * 1.6, 'rgba(210,150,30,0.55)', '#E8A030', 16);
+    // Core gold vein
+    this._stroke(this.goldProg, this.width * 0.9, '#F2C84B', '#FFE080', 8);
+    // Bright centre
+    this._stroke(this.goldProg, this.width * 0.35, '#FFF0A0');
+
+  }
+
+  update(elapsed) {
+    if (elapsed > this.crackDelay) this.crackProg = Math.min(1, this.crackProg + this.crackSpeed);
+    if (elapsed > this.goldDelay)  this.goldProg  = Math.min(1, this.goldProg  + this.goldSpeed);
+  }
+}
+
+// ── 3 coulées — waypoints as [fx, fy] fractions of screen ──
+let coulees = [];
+
+function buildCoulees() {
+  // Re-generate paths at current viewport size (waypoints stay the same)
+  coulees.forEach(c => c.rebuild());
+}
+
+// Coulée 1 — sweep from upper-left to lower-right across full width
+const c1 = new Coulee(
+  [[-0.05,0.18],[0.20,0.30],[0.48,0.20],[0.72,0.38],[1.05,0.28]],
+  3.5, 0, 700, 0.0055
+);
+const c2 = new Coulee(
+  [[1.05,0.52],[0.72,0.44],[0.45,0.58],[0.18,0.50],[-0.05,0.63]],
+  3.0, 180, 1000, 0.005
+);
+const c3 = new Coulee(
+  [[0.10,1.05],[0.32,0.74],[0.58,0.80],[0.82,0.66],[1.05,0.76]],
+  2.6, 360, 1350, 0.0048
+);
+coulees = [c1, c2, c3];
+
+// ── Animate ─────────────────────────────────────────────
+let startTime = null;
+let heroShown = false;
+
+function animate(ts) {
+  if (!startTime) startTime = ts;
+  const elapsed = ts - startTime;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#1A1612';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  coulees.forEach(c => { c.update(elapsed); c.draw(); });
+
+  if (!heroShown && elapsed > 2800) {
+    heroShown = true;
+    document.getElementById('heroContent').classList.add('visible');
+    document.getElementById('scrollHint').classList.add('visible');
+  }
+
+  requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+
+// ── NAV scroll ───────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80);
+});
+
+// ── Reveal on scroll ─────────────────────────────────────
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── Carousel ─────────────────────────────────────────────
+const track = document.getElementById('carouselTrack');
+const dotsEl = document.getElementById('carouselDots');
+const cards = track.querySelectorAll('.product-card');
+let slide = 0;
+
+const vis = () => window.innerWidth < 700 ? 1 : window.innerWidth < 1100 ? 2 : 3;
+
+function buildDots() {
+  dotsEl.innerHTML = '';
+  const n = cards.length - vis() + 1;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === slide ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+}
+
+function goTo(idx) {
+  const n = cards.length - vis() + 1;
+  slide = Math.max(0, Math.min(n - 1, idx));
+  track.style.transform = `translateX(-${slide * (cards[0].offsetWidth + 24)}px)`;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === slide));
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(slide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(slide + 1));
+
+buildDots();
+window.addEventListener('resize', () => { buildDots(); goTo(slide); });
+</script>
+</body>
+</html>
